@@ -1,0 +1,56 @@
+---
+
+- name: create config directory
+  file:
+    name: /etc/automysqlbackup
+    state: directory
+
+- name: create backup directory
+  file:
+    name: '{{ automysqlbackup_backup_directory }}'
+    state: directory
+
+- name: ensure git are installed.
+  package:
+    name: git
+    state: present
+
+- block:
+  - name: install from git sources
+    git:
+      repo: https://github.com/bodsch/AutoMySQLBackup.git
+      version: master
+      dest: /tmp/automysqlbackup
+      clone: yes
+      update: yes
+      force: yes
+
+#  - name: copy distributed config
+#    copy:
+#      src:  /tmp/automysqlbackup/automysqlbackup.conf
+#      dest: /etc/automysqlbackup/automysqlbackup.conf-DIST
+#      remote_src: true
+
+  - name: copy automysqlbackup
+    copy:
+      src:  /tmp/automysqlbackup/automysqlbackup
+      dest: /usr/local/bin/
+      mode: 0755
+      backup: true
+      remote_src: true
+
+- name: create config
+  template:
+    src: automysqlbackup.conf.j2
+    dest: /etc/automysqlbackup/automysqlbackup.conf
+
+- name: Add cron job
+  cron:
+    name: automatic mysql backup
+    job: /usr/local/bin/automysqlbackup
+    minute: '{{ automysqlbackup_cron_minute }}'
+    hour: '{{ automysqlbackup_cron_hour }}'
+    user: root
+    cron_file: mysql_backup
+    state: present
+  when: automysqlbackup_cron_enable | bool

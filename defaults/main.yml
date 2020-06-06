@@ -1,0 +1,20 @@
+---
+automysqlbackup_version: 3.0.7
+
+automysqlbackup_backup_directory: /srv/backup/mysql
+
+automysqlbackup_dump_username: ''
+automysqlbackup_dump_password: ''
+automysqlbackup_dump_host: ''
+
+automysqlbackup_dump_socket: /run/mysqld/mysqld.sock
+automysqlbackup_dump_create_database: true
+automysqlbackup_dump_single_transaction: true
+automysqlbackup_dump_full_schema: true
+automysqlbackup_dump_dbstatus: true
+automysqlbackup_dump_login_path_file: ''
+automysqlbackup_dump_use_separate_dirs: true
+
+automysqlbackup_cron_enable: true
+automysqlbackup_cron_minute: '58'
+automysqlbackup_cron_hour: '02'

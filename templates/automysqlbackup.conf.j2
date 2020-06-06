@@ -1,0 +1,120 @@
+# version=3.0_rc2
+# {{ ansible_managed }}
+
+# CONFIG_mysql_dump_encrypted_login='no'
+
+{% if automysqlbackup_dump_login_path is defined and automysqlbackup_dump_login_path != '' -%}
+CONFIG_mysql_dump_login_path='{{automysqlbackup_dump_login_path}}'
+{% else %}
+# CONFIG_mysql_dump_login_path='automysqldump'
+{% endif %}
+
+{% if automysqlbackup_dump_login_path_file is defined -%}
+CONFIG_mysql_dump_login_path_file='{{automysqlbackup_dump_login_path_file}}'
+{% else %}
+# CONFIG_mysql_dump_login_path_file=''
+{% endif %}
+
+{% if automysqlbackup_dump_username is defined and automysqlbackup_dump_username != '' -%}
+CONFIG_mysql_dump_username='{{automysqlbackup_dump_username}}'
+{% else %}
+# CONFIG_mysql_dump_username='root'
+{% endif %}
+
+{% if automysqlbackup_dump_password is defined and automysqlbackup_dump_password != ''-%}
+CONFIG_mysql_dump_password='{{automysqlbackup_dump_password}}'
+{% else %}
+# CONFIG_mysql_dump_password=''
+{% endif %}
+
+{% if automysqlbackup_dump_host is defined and automysqlbackup_dump_host != '' -%}
+CONFIG_mysql_dump_host='{{automysqlbackup_dump_host}}'
+{% else %}
+# CONFIG_mysql_dump_host='localhost'
+{% endif %}
+
+# CONFIG_mysql_dump_host_friendly=''
+
+CONFIG_backup_dir='{{automysqlbackup_backup_directory}}'
+
+#CONFIG_multicore='yes'
+#CONFIG_multicore_threads=2
+
+#CONFIG_db_names=()
+#CONFIG_db_month_names=()
+CONFIG_db_exclude=( 'performance_schema' 'information_schema' )
+#CONFIG_table_exclude=()
+
+#CONFIG_do_monthly="01"
+#CONFIG_do_weekly="5"
+#CONFIG_rotation_daily=6
+#CONFIG_rotation_weekly=35
+#CONFIG_rotation_monthly=150
+
+#CONFIG_mysql_dump_port=3306
+#CONFIG_mysql_dump_commcomp='no'
+#CONFIG_mysql_dump_usessl='no'
+
+{% if automysqlbackup_dump_socket is defined and automysqlbackup_dump_socket != '' -%}
+CONFIG_mysql_dump_socket='{{automysqlbackup_dump_socket}}'
+{% else %}
+# CONFIG_mysql_dump_socket=''
+{% endif %}
+
+#CONFIG_mysql_dump_max_allowed_packet=''
+
+{% if automysqlbackup_dump_single_transaction is defined -%}
+CONFIG_mysql_dump_single_transaction='{{ automysqlbackup_dump_single_transaction | bool | ternary('yes', 'no') }}'
+{% else %}
+# CONFIG_mysql_dump_single_transaction='no'
+{% endif %}
+
+#CONFIG_mysql_dump_master_data=
+
+{% if automysqlbackup_dump_full_schema is defined -%}
+CONFIG_mysql_dump_full_schema='{{ automysqlbackup_dump_full_schema  | bool | ternary('yes', 'no') }}'
+{% else %}
+# CONFIG_mysql_dump_full_schema='yes'
+{% endif %}
+
+{% if automysqlbackup_dump_dbstatus is defined -%}
+CONFIG_mysql_dump_dbstatus='{{ automysqlbackup_dump_dbstatus  | bool | ternary('yes', 'no') }}'
+{% else %}
+# CONFIG_mysql_dump_dbstatus='yes'
+{% endif %}
+
+{% if automysqlbackup_dump_create_database is defined -%}
+CONFIG_mysql_dump_create_database='{{automysqlbackup_dump_create_database  | bool | ternary('yes', 'no') }}'
+{% else %}
+# CONFIG_mysql_dump_create_database='no'
+{% endif %}
+
+{% if automysqlbackup_dump_use_separate_dirs is defined -%}
+CONFIG_mysql_dump_create_database='{{automysqlbackup_dump_use_separate_dirs  | bool | ternary('yes', 'no') }}'
+{% else %}
+# CONFIG_mysql_dump_use_separate_dirs='no'
+{% endif %}
+
+#CONFIG_mysql_dump_compression='gzip'
+CONFIG_mysql_dump_latest='yes'
+#CONFIG_mysql_dump_latest_clean_filenames='no'
+
+#CONFIG_mysql_dump_differential='no'
+
+#CONFIG_mailcontent='stdout'
+#CONFIG_mail_maxattsize=4000
+#CONFIG_mail_splitandtar='yes'
+#CONFIG_mail_use_uuencoded_attachments='no'
+#CONFIG_mail_address='root'
+
+#CONFIG_encrypt='no'
+#CONFIG_encrypt_password='password0123'
+
+#CONFIG_backup_local_files=()
+#CONFIG_prebackup="/etc/mysql-backup-pre"
+#CONFIG_postbackup="/etc/mysql-backup-post"
+
+#umask 0077
+
+#CONFIG_dryrun=1
+
