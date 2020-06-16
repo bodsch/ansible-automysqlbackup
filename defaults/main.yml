@@ -3,6 +3,9 @@ automysqlbackup_version: 3.0.7
 
 automysqlbackup_backup_directory: /srv/backup/mysql
 
+automysqlbackup_git_repository: 'https://github.com/bodsch/AutoMySQLBackup.git'
+automysqlbackup_git_version: master
+
 automysqlbackup_dump_username: ''
 automysqlbackup_dump_password: ''
 automysqlbackup_dump_host: ''

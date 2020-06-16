@@ -1,5 +1,49 @@
 ---
 
+- name: download automysqlback to ansible-host
+  block:
+    - name: create local temp directory
+      become: false
+      delegate_to: localhost
+      file:
+        path: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
+        state: directory
+
+    - name: download git sources to local directory {{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}
+      become: false
+      delegate_to: localhost
+      git:
+        repo: "{{ automysqlbackup_git_repository }}"
+        version: "{{ automysqlbackup_git_version | default('master') }}"
+        dest: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
+        depth: 1
+        update: true
+        force: true
+
+    - name: create transfer archive
+      become: false
+      delegate_to: localhost
+      archive:
+        path: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
+        dest: "{{ local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tgz"
+
+    - name: propagate automysqlbackup.tgz
+      become: true
+      copy:
+        src: "{{ local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tgz"
+        dest: /tmp
+
+    - name: create temp directory
+      file:
+        path: /tmp/automysqlbackup
+        state: directory
+
+    - name: extract automysqlbackup.tgz
+      unarchive:
+        src: "/tmp/automysqlbackup_{{ automysqlbackup_version }}.tgz"
+        dest: /tmp/automysqlbackup
+        remote_src: true
+
 - name: create config directory
   file:
     name: /etc/automysqlbackup
@@ -10,34 +54,19 @@
     name: '{{ automysqlbackup_backup_directory }}'
     state: directory
 
-- name: ensure git are installed.
-  package:
-    name: git
-    state: present
+- name: copy distributed config
+  copy:
+    src: /tmp/automysqlbackup/{{ automysqlbackup_version }}/automysqlbackup.conf
+    dest: /etc/automysqlbackup/automysqlbackup.conf-DIST
+    remote_src: true
 
-- block:
-  - name: install from git sources
-    git:
-      repo: https://github.com/bodsch/AutoMySQLBackup.git
-      version: master
-      dest: /tmp/automysqlbackup
-      clone: yes
-      update: yes
-      force: yes
-
-#  - name: copy distributed config
-#    copy:
-#      src:  /tmp/automysqlbackup/automysqlbackup.conf
-#      dest: /etc/automysqlbackup/automysqlbackup.conf-DIST
-#      remote_src: true
-
-  - name: copy automysqlbackup
-    copy:
-      src:  /tmp/automysqlbackup/automysqlbackup
-      dest: /usr/local/bin/
-      mode: 0755
-      backup: true
-      remote_src: true
+- name: copy automysqlbackup
+  copy:
+    src: /tmp/automysqlbackup/{{ automysqlbackup_version }}/automysqlbackup
+    dest: /usr/local/bin/
+    mode: 0755
+    backup: true
+    remote_src: true
 
 - name: create config
   template:
