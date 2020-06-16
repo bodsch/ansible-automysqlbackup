@@ -5,5 +5,7 @@
     NETRC: ''
   vars:
     automysqlbackup_cron_enable: false
+    automysqlbackup_include_databases:
+      - foo
   roles:
     - role: ansible-automysqlbackup

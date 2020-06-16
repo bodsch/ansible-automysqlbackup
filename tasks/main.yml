@@ -73,6 +73,48 @@
     src: automysqlbackup.conf.j2
     dest: /etc/automysqlbackup/automysqlbackup.conf
 
+- name: remove pre running script
+  file:
+    name: "{{ automysqlbackup_pre_script_file }}"
+    state: absent
+  when: (
+    automysqlbackup_pre_script_content is defined and
+    automysqlbackup_pre_script_content | length == 0 and
+    automysqlbackup_pre_script_file is defined and
+    automysqlbackup_pre_script_file | length != 0)
+
+- name: remove post running script
+  file:
+    name: "{{ automysqlbackup_post_script_file }}"
+    state: absent
+  when: (
+    automysqlbackup_post_script_content is defined and
+    automysqlbackup_post_script_content | length == 0 and
+    automysqlbackup_post_script_file is defined and
+    automysqlbackup_post_script_file | length != 0)
+
+- name: create pre running script
+  copy:
+    dest: "{{ automysqlbackup_pre_script_file }}"
+    content: "{{ automysqlbackup_pre_script_content }}"
+    mode: 0755
+  when: (
+    automysqlbackup_pre_script_content is defined and
+    automysqlbackup_pre_script_content | length != 0 and
+    automysqlbackup_pre_script_file is defined and
+    automysqlbackup_pre_script_file | length != 0)
+
+- name: create post running script
+  copy:
+    dest: "{{ automysqlbackup_post_script_file }}"
+    content: "{{ automysqlbackup_post_script_content }}"
+    mode: 0755
+  when: (
+    automysqlbackup_post_script_content is defined and
+    automysqlbackup_post_script_content | length != 0 and
+    automysqlbackup_post_script_file is defined and
+    automysqlbackup_post_script_file | length != 0)
+
 - name: Add cron job
   cron:
     name: automatic mysql backup

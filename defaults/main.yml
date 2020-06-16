@@ -1,6 +1,12 @@
 ---
 automysqlbackup_version: 3.0.7
 
+automysqlbackup_pre_script_file: ''
+automysqlbackup_pre_script_content: ''
+
+automysqlbackup_post_script_file: ''
+automysqlbackup_post_script_content : ''
+
 automysqlbackup_backup_directory: /srv/backup/mysql
 
 automysqlbackup_git_repository: 'https://github.com/bodsch/AutoMySQLBackup.git'
@@ -18,6 +24,22 @@ automysqlbackup_dump_dbstatus: true
 automysqlbackup_dump_login_path_file: ''
 automysqlbackup_dump_use_separate_dirs: true
 
+automysqlbackup_multicore: false
+automysqlbackup_multicore_threads: 2
+
+automysqlbackup_rotation:
+  daily: 6
+  weekly: 35
+  monthly: 150
+
+automysqlbackup_exclude_databases:
+  - performance_schema
+  - information_schema
+
+automysqlbackup_include_databases: []
+
 automysqlbackup_cron_enable: true
 automysqlbackup_cron_minute: '58'
 automysqlbackup_cron_hour: '02'
+
+automysqlbackup_backup_local_files: []
