@@ -1,0 +1,7 @@
+---
+
+automysqlbackup_cron:
+  enable: false
+
+automysqlbackup_include_databases:
+  - foo
