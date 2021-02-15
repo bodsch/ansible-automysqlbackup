@@ -90,9 +90,6 @@ jobs:
 
       - name: test with tox
         run: |
-          cd ../
-          mv ansible-automysqlbackup bodsch.automysqlbackup
-          cd bodsch.automysqlbackup
           tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- molecule test
         env:
           PY_COLORS: '1'
