@@ -8,13 +8,14 @@
       file:
         path: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
         state: directory
+        mode: 0750
 
     - name: download git sources to local directory {{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}
       become: false
       delegate_to: localhost
       git:
-        repo: "{{ automysqlbackup_git_repository }}"
-        version: "{{ automysqlbackup_git_version | default('master') }}"
+        repo: "{{ automysqlbackup_git.repository }}"
+        version: "{{ automysqlbackup_git.version | default('master') }}"
         dest: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
         depth: 1
         update: true
@@ -26,17 +27,20 @@
       archive:
         path: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
         dest: "{{ local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tgz"
+        mode: 0750
 
     - name: propagate automysqlbackup.tgz
       become: true
       copy:
         src: "{{ local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tgz"
         dest: /tmp
+        mode: 0640
 
     - name: create temp directory
       file:
         path: /tmp/automysqlbackup
         state: directory
+        mode: 0750
 
     - name: extract automysqlbackup.tgz
       unarchive:
@@ -48,17 +52,20 @@
   file:
     name: /etc/automysqlbackup
     state: directory
+    mode: 0750
 
 - name: create backup directory
   file:
     name: '{{ automysqlbackup_backup_directory }}'
     state: directory
+    mode: 0750
 
 - name: copy distributed config
   copy:
     src: /tmp/automysqlbackup/{{ automysqlbackup_version }}/automysqlbackup.conf
     dest: /etc/automysqlbackup/automysqlbackup.conf-DIST
     remote_src: true
+    mode: 0640
 
 - name: copy automysqlbackup
   copy:
@@ -72,56 +79,59 @@
   template:
     src: automysqlbackup.conf.j2
     dest: /etc/automysqlbackup/automysqlbackup.conf
+    mode: 0640
 
 - name: remove pre running script
   file:
-    name: "{{ automysqlbackup_pre_script_file }}"
+    name: "{{ automysqlbackup_pre_script.file }}"
     state: absent
-  when: (
-    automysqlbackup_pre_script_content is defined and
-    automysqlbackup_pre_script_content | length == 0 and
-    automysqlbackup_pre_script_file is defined and
-    automysqlbackup_pre_script_file | length != 0)
+  when:
+    - automysqlbackup_pre_script.content is defined
+    - automysqlbackup_pre_script.content | length == 0
+    - automysqlbackup_pre_script.file is defined
+    - automysqlbackup_pre_script.file | length != 0
 
 - name: remove post running script
   file:
-    name: "{{ automysqlbackup_post_script_file }}"
+    name: "{{ automysqlbackup_post_script.file }}"
     state: absent
-  when: (
-    automysqlbackup_post_script_content is defined and
-    automysqlbackup_post_script_content | length == 0 and
-    automysqlbackup_post_script_file is defined and
-    automysqlbackup_post_script_file | length != 0)
+  when:
+    - automysqlbackup_post_script.content is defined
+    - automysqlbackup_post_script.content | length == 0
+    - automysqlbackup_post_script.file is defined
+    - automysqlbackup_post_script.file | length != 0
 
 - name: create pre running script
   copy:
-    dest: "{{ automysqlbackup_pre_script_file }}"
-    content: "{{ automysqlbackup_pre_script_content }}"
+    dest: "{{ automysqlbackup_pre_script.file }}"
+    content: "{{ automysqlbackup_pre_script.content }}"
     mode: 0755
-  when: (
-    automysqlbackup_pre_script_content is defined and
-    automysqlbackup_pre_script_content | length != 0 and
-    automysqlbackup_pre_script_file is defined and
-    automysqlbackup_pre_script_file | length != 0)
+  when:
+    - automysqlbackup_pre_script.content is defined
+    - automysqlbackup_pre_script.content | length != 0
+    - automysqlbackup_pre_script.file is defined
+    - automysqlbackup_pre_script.file | length != 0
 
 - name: create post running script
   copy:
-    dest: "{{ automysqlbackup_post_script_file }}"
-    content: "{{ automysqlbackup_post_script_content }}"
+    dest: "{{ automysqlbackup_post_script.file }}"
+    content: "{{ automysqlbackup_post_script.content }}"
     mode: 0755
-  when: (
-    automysqlbackup_post_script_content is defined and
-    automysqlbackup_post_script_content | length != 0 and
-    automysqlbackup_post_script_file is defined and
-    automysqlbackup_post_script_file | length != 0)
+  when:
+    - automysqlbackup_post_script.content is defined
+    - automysqlbackup_post_script.content | length != 0
+    - automysqlbackup_post_script.file is defined
+    - automysqlbackup_post_script.file | length != 0
 
 - name: Add cron job
   cron:
     name: automatic mysql backup
     job: /usr/local/bin/automysqlbackup
-    minute: '{{ automysqlbackup_cron_minute }}'
-    hour: '{{ automysqlbackup_cron_hour }}'
+    minute: '{{ automysqlbackup_cron.minute }}'
+    hour: '{{ automysqlbackup_cron.hour }}'
     user: root
     cron_file: mysql_backup
     state: present
-  when: automysqlbackup_cron_enable | bool
+  when:
+    - automysqlbackup_cron.enable is defined
+    - automysqlbackup_cron.enable | bool
