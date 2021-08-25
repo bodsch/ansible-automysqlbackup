@@ -1,4 +1,6 @@
 
+# Ansible Role:  `automysqlbackup`
+
 installs and confige automysqlbackup script.
 
 
@@ -12,7 +14,7 @@ installs and confige automysqlbackup script.
 
 ## usage
 
-```
+```yaml
 automysqlbackup_version: 3.0.7
 
 automysqlbackup_pre_script:
@@ -64,7 +66,8 @@ automysqlbackup_backup_local_files: []
 ```
 
 ### use a pre running script
-```
+
+```yaml
 automysqlbackup_pre_script:
   file: '/tmp/pre.sh'
   content: |
