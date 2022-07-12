@@ -12,6 +12,16 @@ installs and confige automysqlbackup script.
 [issues]: https://github.com/bodsch/ansible-automysqlbackup/issues?q=is%3Aopen+is%3Aissue
 [releases]: https://github.com/bodsch/ansible-automysqlbackup/releases
 
+
+## Operating systems
+
+Tested on
+
+* Arch Linux
+* Debian based
+    - Debian 10 / 11
+    - Ubuntu 20.10
+
 ## usage
 
 ```yaml
@@ -74,5 +84,16 @@ automysqlbackup_pre_script:
   #!/bin/bash
   echo "foo"
 ```
+
+
+## Author and License
+
+- Bodo Schulz
+
+## License
+
+[Apache](LICENSE)
+
+`FREE SOFTWARE, HELL YEAH!`
 
 
