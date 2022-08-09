@@ -34,7 +34,7 @@ jobs:
           VALIDATE_YAML: true
 
   arch:
-    name: "${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}"
+    name: "${{ matrix.image }} / ansible: ${{ matrix.ansible-version }}, szenario: ${{ matrix.scenario }}"
     needs:
       - lint
     runs-on: ubuntu-20.04
@@ -43,11 +43,12 @@ jobs:
       matrix:
         image:
           - archlinux:latest
-        python-version:
-          - '3.9'
         ansible-version:
-          - '4.1.0'
-          - '5.1.0'
+          - '4.10'
+          - '5.1'
+          - '6.1'
+        scenario:
+          - default
 
     steps:
       - name: check out the codebase.
@@ -75,15 +76,15 @@ jobs:
 
       - name: test with tox
         run: |
-          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- \
-            molecule test
+          tox -e ansible_$(printf "${{ matrix.ansible-version }}") \
+            -- molecule test --scenario-name "${{ matrix.scenario }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           DISTRIBUTION: ${{ matrix.image }}
 
   deb:
-    name: "${{ matrix.image }} / python: ${{ matrix.python-version }}, ansible: ${{ matrix.ansible-version }}"
+    name: "${{ matrix.image }} / ansible: ${{ matrix.ansible-version }}, szenario: ${{ matrix.scenario }}"
     needs:
       - lint
     runs-on: ubuntu-20.04
@@ -94,11 +95,12 @@ jobs:
           - debian:10
           - debian:11
           - ubuntu:20.04
-        python-version:
-          - '3.9'
         ansible-version:
-          - '4.1.0'
-          - '5.1.0'
+          - '4.10'
+          - '5.1'
+          - '6.1'
+        scenario:
+          - default
 
     steps:
       - name: check out the codebase.
@@ -126,8 +128,8 @@ jobs:
 
       - name: test with tox
         run: |
-          tox -e py$(printf "${{ matrix.python-version }}" | tr -d '.')-ansible$(printf "${{ matrix.ansible-version }}" | tr -d '.') -- \
-            molecule test
+          tox -e ansible_$(printf "${{ matrix.ansible-version }}") \
+            -- molecule test --scenario-name "${{ matrix.scenario }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -141,7 +143,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: galaxy
-        uses: robertdebock/galaxy-action@1.2.0
+        uses: robertdebock/galaxy-action@1.2.1
         with:
           galaxy_api_key: ${{ secrets.galaxy_api_key }}
           git_branch: main
