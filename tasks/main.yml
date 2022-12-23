@@ -5,7 +5,7 @@
     - name: create local temp directory
       become: false
       delegate_to: localhost
-      file:
+      ansible.builtin.file:
         path: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
         state: directory
         mode: 0750
@@ -13,7 +13,7 @@
     - name: download git sources to local directory
       become: false
       delegate_to: localhost
-      git:
+      ansible.builtin.git:
         repo: "{{ automysqlbackup_git.repository }}"
         version: "{{ automysqlbackup_git.version | default('master') }}"
         dest: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
@@ -24,51 +24,51 @@
     - name: create transfer archive
       become: false
       delegate_to: localhost
-      archive:
+      community.general.archive:
         path: "{{ local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
         dest: "{{ local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tgz"
         mode: 0750
 
     - name: propagate automysqlbackup.tgz
       become: true
-      copy:
+      ansible.builtin.copy:
         src: "{{ local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tgz"
         dest: /tmp
         mode: 0640
 
     - name: create temp directory
-      file:
+      ansible.builtin.file:
         path: /tmp/automysqlbackup
         state: directory
         mode: 0750
 
     - name: extract automysqlbackup.tgz
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/tmp/automysqlbackup_{{ automysqlbackup_version }}.tgz"
         dest: /tmp/automysqlbackup
         remote_src: true
 
 - name: create config directory
-  file:
+  ansible.builtin.file:
     name: /etc/automysqlbackup
     state: directory
     mode: 0750
 
 - name: create backup directory
-  file:
+  ansible.builtin.file:
     name: '{{ automysqlbackup_backup_directory }}'
     state: directory
     mode: 0755
 
 - name: copy distributed config
-  copy:
+  ansible.builtin.copy:
     src: /tmp/automysqlbackup/{{ automysqlbackup_version }}/automysqlbackup.conf
     dest: /etc/automysqlbackup/automysqlbackup.conf-DIST
     remote_src: true
     mode: 0640
 
 - name: copy automysqlbackup
-  copy:
+  ansible.builtin.copy:
     src: /tmp/automysqlbackup/{{ automysqlbackup_version }}/automysqlbackup
     dest: /usr/local/bin/
     mode: 0755
@@ -76,13 +76,13 @@
     remote_src: true
 
 - name: create config
-  template:
+  ansible.builtin.template:
     src: automysqlbackup.conf.j2
     dest: /etc/automysqlbackup/automysqlbackup.conf
     mode: 0640
 
 - name: remove pre running script
-  file:
+  ansible.builtin.file:
     name: "{{ automysqlbackup_pre_script.file }}"
     state: absent
   when:
@@ -92,7 +92,7 @@
     - automysqlbackup_pre_script.file | length != 0
 
 - name: remove post running script
-  file:
+  ansible.builtin.file:
     name: "{{ automysqlbackup_post_script.file }}"
     state: absent
   when:
@@ -102,7 +102,7 @@
     - automysqlbackup_post_script.file | length != 0
 
 - name: create pre running script
-  copy:
+  ansible.builtin.copy:
     dest: "{{ automysqlbackup_pre_script.file }}"
     content: "{{ automysqlbackup_pre_script.content }}"
     mode: 0755
@@ -113,7 +113,7 @@
     - automysqlbackup_pre_script.file | length != 0
 
 - name: create post running script
-  copy:
+  ansible.builtin.copy:
     dest: "{{ automysqlbackup_post_script.file }}"
     content: "{{ automysqlbackup_post_script.content }}"
     mode: 0755
@@ -124,7 +124,7 @@
     - automysqlbackup_post_script.file | length != 0
 
 - name: Add cron job
-  cron:
+  ansible.builtin.cron:
     name: automatic mysql backup
     job: /usr/local/bin/automysqlbackup
     minute: '{{ automysqlbackup_cron.minute }}'
