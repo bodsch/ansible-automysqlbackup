@@ -6,17 +6,19 @@ galaxy_info:
   author: Bodo Schulz
   description: ansible role to install and configure automysqlbackup
   license: Apache
-  min_ansible_version: 2.8
+  min_ansible_version: "2.8"
 
   platforms:
-    - name: "Ubuntu"
+    - name: Debian
       versions:
-        - "xenial"
-        - "bionic"
-    - name: "Debian"
+        # 10
+        - buster
+        # 11
+        - bullseye
+    - name: Ubuntu
       versions:
-        - "jessie"
-        - "stretch"
+        # 20.04
+        - focal
 
   galaxy_tags:
     - "system"
