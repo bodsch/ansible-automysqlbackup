@@ -2,15 +2,9 @@
 name: CI
 
 on:
-  schedule:
-    - cron: "0 8 * * 0"
-  workflow_dispatch:
   workflow_run:
     workflows:
       - "code linter"
-    branches:
-      - main
-      - feature/**
     types:
       - completed
 
@@ -31,7 +25,8 @@ jobs:
         ansible-version:
           - '5.1'
           - '6.1'
-
+        scenario:
+          - default
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v3
@@ -58,8 +53,11 @@ jobs:
 
       - name: test with tox
         run: |
-          tox -e ansible_$(printf "${{ matrix.ansible-version }}") \
-            -- molecule test --scenario-name default
+          make \
+            test \
+            -e TOX_SCENARIO="${{ matrix.scenario }}" \
+            -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
+            -e DISTRIBUTION="${{ matrix.image }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -79,7 +77,8 @@ jobs:
         ansible-version:
           - '5.1'
           - '6.1'
-
+        scenario:
+          - default
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v3
@@ -106,8 +105,11 @@ jobs:
 
       - name: test with tox
         run: |
-          tox -e ansible_$(printf "${{ matrix.ansible-version }}") \
-            -- molecule test --scenario-name default
+          make \
+            test \
+            -e TOX_SCENARIO="${{ matrix.scenario }}" \
+            -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
+            -e DISTRIBUTION="${{ matrix.image }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

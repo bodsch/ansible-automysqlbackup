@@ -1,3 +1,8 @@
 ---
 
+automysqlbackup_download: false
+automysqlbackup_download_directory: "/tmp/automysqlbackup/AutoMySQLBackup-{{ automysqlbackup_version }}"
+
 local_tmp_directory: /var/tmp/ansible_artefacts
+
+...

@@ -12,8 +12,11 @@ automysqlbackup_post_script:
 
 automysqlbackup_backup_directory: /srv/backup/mysql
 
+automysqlbackup_source: archive
+
+automysqlbackup_archive: "https://github.com/bodsch/AutoMySQLBackup/archive/refs/tags/{{ automysqlbackup_version }}.tar.gz"
 automysqlbackup_git:
-  repository: 'https://github.com/bodsch/AutoMySQLBackup.git'
+  repository: 'https://github.com/bodsch/AutoMySQLBackup'
   version: master
 
 automysqlbackup_dump:

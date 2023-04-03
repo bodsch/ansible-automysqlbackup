@@ -1,7 +1,7 @@
 
 # Ansible Role:  `automysqlbackup`
 
-installs and confige automysqlbackup script.
+Installs and confige automysqlbackup script.
 
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-automysqlbackup/main.yml?branch=main)][ci]
@@ -23,6 +23,18 @@ Tested on
 * Debian based
     - Debian 10 / 11
     - Ubuntu 20.10
+
+
+## Contribution
+
+Please read [Contribution](CONTRIBUTING.md)
+
+## Development,  Branches (Git Tags)
+
+The `master` Branch is my *Working Horse* includes the "latest, hot shit" and can be complete broken!
+
+If you want to use something stable, please use a [Tagged Version](https://github.com/bodsch/ansible-automysqlbackup/tags)!
+
 
 ## usage
 
@@ -96,6 +108,6 @@ automysqlbackup_pre_script:
 
 [Apache](LICENSE)
 
-`FREE SOFTWARE, HELL YEAH!`
+**FREE SOFTWARE, HELL YEAH!**
 
 

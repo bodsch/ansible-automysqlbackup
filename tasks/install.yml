@@ -1,0 +1,43 @@
+---
+
+- name: copy automysqlbackup
+  ansible.builtin.copy:
+    src: "{{ automysqlbackup_download_directory }}/automysqlbackup"
+    dest: /usr/local/bin/
+    mode: 0755
+    backup: true
+    remote_src: true
+
+- name: detect the installed binary
+  ansible.builtin.stat:
+    path: /usr/local/bin/automysqlbackup
+    # get_checksum: false
+  register: stat_automysqlbackup_binary
+  ignore_errors: true
+
+- name: define automysqlbackup binary checksum
+  ansible.builtin.set_fact:
+    automysqlbackup_checksum: "{{ stat_automysqlbackup_binary.stat.checksum }}"
+  when:
+    - stat_automysqlbackup_binary is defined
+    - stat_automysqlbackup_binary.stat is defined
+    - stat_automysqlbackup_binary.stat.checksum is defined
+
+- name: create local facts
+  ansible.builtin.template:
+    src: ansible_facts.j2
+    dest: /etc/ansible/facts.d/automysqlbackup.fact
+    mode: 0755
+
+- name: Add cron job
+  ansible.builtin.cron:
+    name: automatic mysql backup
+    job: /usr/local/bin/automysqlbackup
+    minute: '{{ automysqlbackup_cron.minute }}'
+    hour: '{{ automysqlbackup_cron.hour }}'
+    user: root
+    cron_file: mysql_backup
+    state: present
+  when:
+    - automysqlbackup_cron.enable is defined
+    - automysqlbackup_cron.enable | bool
