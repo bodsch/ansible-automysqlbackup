@@ -7,4 +7,6 @@ automysqlbackup_local_tmp_directory: "{{
 automysqlbackup_download: false
 automysqlbackup_download_directory: "/tmp/automysqlbackup/AutoMySQLBackup-{{ automysqlbackup_version }}"
 
+systemd_lib_directory: /lib/systemd/system
+
 ...

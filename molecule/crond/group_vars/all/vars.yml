@@ -1,0 +1,9 @@
+---
+
+automysqlbackup_cron:
+  type: cron          # alternative: systemd
+  daemon: "{{ 'cron' if ansible_os_family | lower == 'debian' else 'cronie' }}"
+  enabled: true       # [true, false]
+
+automysqlbackup_include_databases:
+  - foo

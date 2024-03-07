@@ -1,0 +1,12 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# {{ ansible_managed }}
+
+[Unit]
+Description         = Mysql/MariaDB database backup job
+
+[Service]
+User                = root
+ExecCondition       = /usr/local/bin/automysqlbackup
+ExecStart           = /usr/local/bin/automysqlbackup
+
+KillMode            = process

@@ -46,8 +46,16 @@ automysqlbackup_exclude_databases:
 automysqlbackup_include_databases: []
 
 automysqlbackup_cron:
-  enable: true
-  minute: '58'
-  hour: '02'
+  type: cron          # alternative: systemd
+  daemon: ""          # "{{ 'cron' if ansible_os_family | lower == 'debian' else 'cronie' }}"
+  enabled: true       # [true, false]
+  minute: ""          # 58
+  hour: ""            # 2
+  weekday: ""         # *
+
+# automysqlbackup_cron:
+#   enable: true
+#   minute: '58'
+#   hour: '02'
 
 automysqlbackup_backup_local_files: []

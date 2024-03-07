@@ -7,13 +7,13 @@ Installs and confige automysqlbackup script.
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-automysqlbackup/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-automysqlbackup)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-automysqlbackup)][releases]
-[![Ansible Quality Score](https://img.shields.io/ansible/quality/50067?label=role%20quality)][quality]
+[![Ansible Downloads](https://img.shields.io/ansible/role/d/bodsch/automysqlbackup?logo=ansible)][galaxy]
+
 
 [ci]: https://github.com/bodsch/ansible-automysqlbackup/actions
 [issues]: https://github.com/bodsch/ansible-automysqlbackup/issues?q=is%3Aopen+is%3Aissue
 [releases]: https://github.com/bodsch/ansible-automysqlbackup/releases
-[quality]: https://galaxy.ansible.com/bodsch/automysqlbackup
-
+[galaxy]: https://galaxy.ansible.com/ui/standalone/roles/bodsch/automysqlbackup/
 
 ## Operating systems
 
@@ -84,9 +84,12 @@ automysqlbackup_exclude_databases:
 automysqlbackup_include_databases: []
 
 automysqlbackup_cron:
-  enable: true
-  minute: '58'
-  hour: '02'
+  type: cron          # alternative: systemd
+  daemon: ""          # "{{ 'cron' if ansible_os_family | lower == 'debian' else 'cronie' }}"
+  enabled: true       # [true, false]
+  minute: ""          # 58
+  hour: ""            # 2
+  weekday: ""         # *
 
 automysqlbackup_backup_local_files: []
 ```

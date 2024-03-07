@@ -15,3 +15,6 @@
 
 - name: configure
   ansible.builtin.include_tasks: configure.yml
+
+- name: cron job
+  ansible.builtin.include_tasks: cron_job.yml

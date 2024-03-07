@@ -1,0 +1,8 @@
+---
+
+automysqlbackup_cron:
+  type: systemd       # alternative: systemd
+  enabled: true       # [true, false]
+
+automysqlbackup_include_databases:
+  - foo

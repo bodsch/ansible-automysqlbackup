@@ -28,16 +28,3 @@
     src: ansible_facts.j2
     dest: /etc/ansible/facts.d/automysqlbackup.fact
     mode: 0755
-
-- name: Add cron job
-  ansible.builtin.cron:
-    name: automatic mysql backup
-    job: /usr/local/bin/automysqlbackup
-    minute: '{{ automysqlbackup_cron.minute }}'
-    hour: '{{ automysqlbackup_cron.hour }}'
-    user: root
-    cron_file: mysql_backup
-    state: present
-  when:
-    - automysqlbackup_cron.enable is defined
-    - automysqlbackup_cron.enable | bool
