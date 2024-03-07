@@ -53,9 +53,4 @@ automysqlbackup_cron:
   hour: ""            # 2
   weekday: ""         # *
 
-# automysqlbackup_cron:
-#   enable: true
-#   minute: '58'
-#   hour: '02'
-
 automysqlbackup_backup_local_files: []

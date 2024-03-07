@@ -1,5 +1,6 @@
 ---
-name: backup with systemd
+
+name: configured
 
 on:
   workflow_run:
@@ -30,6 +31,7 @@ jobs:
           - '6.7'
         scenario:
           - systemd-timer
+          - crond
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v4
