@@ -5,7 +5,7 @@ name: configured
 on:
   workflow_run:
     workflows:
-      - "code linter"
+      - "CI"
     types:
       - completed
 
