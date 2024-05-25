@@ -13,7 +13,7 @@
   ansible.builtin.copy:
     src: "{{ automysqlbackup_download_directory }}/automysqlbackup"
     dest: /usr/local/bin/
-    mode: 0755
+    mode: "0755"
     backup: true
     remote_src: true
 
@@ -36,4 +36,4 @@
   ansible.builtin.template:
     src: ansible_facts.j2
     dest: /etc/ansible/facts.d/automysqlbackup.fact
-    mode: 0755
+    mode: "0755"

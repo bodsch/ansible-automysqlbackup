@@ -6,7 +6,7 @@
   ansible.builtin.file:
     path: "{{ automysqlbackup_local_tmp_directory }}"
     state: directory
-    mode: 0750
+    mode: "0750"
 
 - name: clone automysqlbackup repository to ansible-host
   when:
@@ -18,7 +18,7 @@
       ansible.builtin.file:
         path: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
         state: directory
-        mode: 0750
+        mode: "0750"
 
     - name: download git sources to local directory
       become: false
@@ -37,7 +37,7 @@
       community.general.archive:
         path: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
         dest: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.zip"
-        mode: 0660
+        mode: "0660"
         remove: false
         format: zip
         exclude_path:
@@ -71,7 +71,7 @@
       ansible.builtin.get_url:
         url: "{{ automysqlbackup_archive }}"
         dest: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.zip"
-        mode: 0640
+        mode: "0640"
       register: _download_archive
       until: _download_archive is succeeded
       retries: 5
@@ -87,13 +87,13 @@
   ansible.builtin.copy:
     src: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.zip"
     dest: /tmp
-    mode: 0640
+    mode: "0640"
 
 - name: create temp directory
   ansible.builtin.file:
     path: /tmp/automysqlbackup
     state: directory
-    mode: 0750
+    mode: "0750"
 
 - name: extract automysqlbackup.zip
   ansible.builtin.unarchive:

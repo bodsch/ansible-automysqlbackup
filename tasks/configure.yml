@@ -4,20 +4,20 @@
   ansible.builtin.file:
     name: /etc/automysqlbackup
     state: directory
-    mode: 0750
+    mode: "0750"
 
 - name: create backup directory
   ansible.builtin.file:
     name: '{{ automysqlbackup_backup_directory }}'
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: copy distributed config
   ansible.builtin.copy:
     src: "{{ automysqlbackup_download_directory }}/automysqlbackup.conf"
     dest: /etc/automysqlbackup/automysqlbackup.conf-DIST
     remote_src: true
-    mode: 0640
+    mode: "0640"
   when:
     - automysqlbackup_download
 
@@ -37,7 +37,7 @@
   ansible.builtin.template:
     src: automysqlbackup.conf.j2
     dest: /etc/automysqlbackup/automysqlbackup.conf
-    mode: 0640
+    mode: "0640"
 
 - name: remove pre running script
   ansible.builtin.file:
@@ -63,7 +63,7 @@
   ansible.builtin.copy:
     dest: "{{ automysqlbackup_pre_script.file }}"
     content: "{{ automysqlbackup_pre_script.content }}"
-    mode: 0755
+    mode: "0755"
   when:
     - automysqlbackup_pre_script.content is defined
     - automysqlbackup_pre_script.content | length != 0
@@ -74,7 +74,7 @@
   ansible.builtin.copy:
     dest: "{{ automysqlbackup_post_script.file }}"
     content: "{{ automysqlbackup_post_script.content }}"
-    mode: 0755
+    mode: "0755"
   when:
     - automysqlbackup_post_script.content is defined
     - automysqlbackup_post_script.content | length != 0
