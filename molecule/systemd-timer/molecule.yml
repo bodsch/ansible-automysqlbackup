@@ -9,6 +9,32 @@ driver:
   name: docker
 
 platforms:
+  - name: database
+    image: "bodsch/ansible-debian:12"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    privileged: true
+    pre_build_image: true
+    cgroupns_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/lib/containerd
+    capabilities:
+      - SYS_ADMIN
+    tmpfs:
+      - /run
+      - /tmp
+    groups:
+      - database
+    docker_networks:
+      - name: backup
+        ipam_config:
+          - subnet: "10.19.0.0/24"
+            gateway: "10.19.0.1"
+    networks:
+      - name: backup
+        ipv4_address: "10.19.0.10"
+
   - name: instance
     image: "bodsch/ansible-${DISTRIBUTION:-debian:12}"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
@@ -22,6 +48,9 @@ platforms:
     tmpfs:
       - /run
       - /tmp
+    networks:
+      - name: backup
+        ipv4_address: "10.19.0.20"
 
 provisioner:
   name: ansible

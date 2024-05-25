@@ -1,8 +1,34 @@
 ---
 
+automysqlbackup_client_package: mariadb-client
+
+automysqlbackup_dump:
+  create_database: true
+  full_schema: true
+  dbstatus: true
+  use_separate_dirs: true
+
+automysqlbackup_connection:
+  encrypted_login: false
+  username: 'backup'
+  password: "{{ vault__database.passwords.backup }}"
+  host: "{{ database_hostname }}"
+  port: ''
+  socket: /run/mysqld/mysqld.sock
+  commpress_communication: true
+  login_cnf_file: ''
+  use_ssl: false
+  max_allowed_packet: ''
+  single_transaction: true
+
 automysqlbackup_cron:
   type: systemd       # alternative: systemd
   enabled: true       # [true, false]
+  minute: "50"        # 58
+  hour: "4"           # 2
 
-automysqlbackup_include_databases:
-  - foo
+automysqlbackup_include:
+  databases:
+    - demo
+    - mysql
+    - information_schema

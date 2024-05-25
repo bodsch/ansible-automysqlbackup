@@ -3,5 +3,6 @@
 automysqlbackup_cron:
   enable: false
 
-automysqlbackup_include_databases:
-  - foo
+automysqlbackup_include:
+  databases:
+    - foo

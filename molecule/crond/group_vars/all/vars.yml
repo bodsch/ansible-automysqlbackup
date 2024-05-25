@@ -1,9 +1,33 @@
 ---
 
+automysqlbackup_client_package: mariadb-client
+
+automysqlbackup_dump:
+  create_database: true
+  full_schema: true
+  dbstatus: true
+  use_separate_dirs: true
+
+automysqlbackup_connection:
+  encrypted_login: false
+  username: 'backup'
+  password: "{{ vault__database.passwords.backup }}"
+  host: "{{ database_hostname }}"
+  port: ''
+  socket: /run/mysqld/mysqld.sock
+  commpress_communication: true
+  login_cnf_file: ''
+  use_ssl: false
+  max_allowed_packet: ''
+  single_transaction: true
+
 automysqlbackup_cron:
   type: cron          # alternative: systemd
   daemon: "{{ 'cron' if ansible_os_family | lower == 'debian' else 'cronie' }}"
   enabled: true       # [true, false]
 
-automysqlbackup_include_databases:
-  - foo
+automysqlbackup_include:
+  databases:
+    - demo
+    - mysql
+    - information_schema
