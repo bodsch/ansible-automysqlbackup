@@ -1,5 +1,14 @@
 ---
 
+- name: install database client package
+  when:
+    - automysqlbackup_client_package | default('') | length > 0
+    - automysqlbackup_client_package | regex_search(".*-client")
+  ansible.builtin.package:
+    name:
+      - "{{ automysqlbackup_client_package }}"
+    state: present
+
 - name: copy automysqlbackup
   ansible.builtin.copy:
     src: "{{ automysqlbackup_download_directory }}/automysqlbackup"

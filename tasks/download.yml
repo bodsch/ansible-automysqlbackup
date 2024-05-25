@@ -1,5 +1,13 @@
 ---
 
+- name: create download directory
+  become: false
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ automysqlbackup_local_tmp_directory }}"
+    state: directory
+    mode: 0750
+
 - name: clone automysqlbackup repository to ansible-host
   when:
     - automysqlbackup_source == "git"
@@ -28,8 +36,14 @@
       delegate_to: localhost
       community.general.archive:
         path: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}"
-        dest: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tar.gz"
-        mode: 0750
+        dest: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.zip"
+        mode: 0660
+        remove: false
+        format: zip
+        exclude_path:
+          - "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}/.git*"
+        exclusion_patterns:
+          - "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup/{{ automysqlbackup_version }}/.git*"
 
     - name: define automysqlbackup download directory
       ansible.builtin.set_fact:
@@ -39,14 +53,24 @@
   when:
     - automysqlbackup_source == "archive"
   block:
+    - name: detect the downloaded automysqlbackup archive
+      become: false
+      delegate_to: localhost
+      run_once: true
+      ansible.builtin.stat:
+        path: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.zip"
+      register: stat_automysqlbackup_archive
 
     - name: download automysqlbackup archive
+      when:
+        - stat_automysqlbackup_archive.stat is defined
+        - not stat_automysqlbackup_archive.stat.exists | default('false')
       become: false
       delegate_to: localhost
       run_once: true
       ansible.builtin.get_url:
         url: "{{ automysqlbackup_archive }}"
-        dest: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tar.gz"
+        dest: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.zip"
         mode: 0640
       register: _download_archive
       until: _download_archive is succeeded
@@ -56,12 +80,12 @@
 
     - name: define automysqlbackup download directory
       ansible.builtin.set_fact:
-        automysqlbackup_download_directory: "/tmp/automysqlbackup/AutoMySQLBackup-{{ automysqlbackup_version }}"
+        automysqlbackup_download_directory: "/tmp/automysqlbackup/{{ automysqlbackup_version }}"
 
-- name: propagate automysqlbackup.tgz
+- name: propagate automysqlbackup.zip
   become: true
   ansible.builtin.copy:
-    src: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.tar.gz"
+    src: "{{ automysqlbackup_local_tmp_directory }}/automysqlbackup_{{ automysqlbackup_version }}.zip"
     dest: /tmp
     mode: 0640
 
@@ -71,8 +95,8 @@
     state: directory
     mode: 0750
 
-- name: extract automysqlbackup.tgz
+- name: extract automysqlbackup.zip
   ansible.builtin.unarchive:
-    src: "/tmp/automysqlbackup_{{ automysqlbackup_version }}.tar.gz"
+    src: "/tmp/automysqlbackup_{{ automysqlbackup_version }}.zip"
     dest: /tmp/automysqlbackup
     remote_src: true

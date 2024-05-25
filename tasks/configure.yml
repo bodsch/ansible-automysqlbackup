@@ -21,6 +21,18 @@
   when:
     - automysqlbackup_download
 
+- name: merge automysqlbackup configuration between defaults and custom
+  ansible.builtin.set_fact:
+    automysqlbackup_dump: "{{ automysqlbackup_defaults_dump | combine(automysqlbackup_dump, recursive=True) }}"
+    automysqlbackup_connection: "{{ automysqlbackup_defaults_connection | combine(automysqlbackup_connection, recursive=True) }}"
+    automysqlbackup_notification: "{{ automysqlbackup_defaults_notification | combine(automysqlbackup_notification, recursive=True) }}"
+    automysqlbackup_encryption: "{{ automysqlbackup_defaults_encryption | combine(automysqlbackup_encryption, recursive=True) }}"
+    automysqlbackup_multicore: "{{ automysqlbackup_defaults_multicore | combine(automysqlbackup_multicore, recursive=True) }}"
+    automysqlbackup_rotation: "{{ automysqlbackup_defaults_rotation | combine(automysqlbackup_rotation, recursive=True) }}"
+    automysqlbackup_exclude: "{{ automysqlbackup_defaults_exclude | combine(automysqlbackup_exclude, recursive=True) }}"
+    automysqlbackup_include: "{{ automysqlbackup_defaults_include | combine(automysqlbackup_include, recursive=True) }}"
+    automysqlbackup_cron: "{{ automysqlbackup_defaults_cron | combine(automysqlbackup_cron, recursive=True) }}"
+
 - name: create config
   ansible.builtin.template:
     src: automysqlbackup.conf.j2

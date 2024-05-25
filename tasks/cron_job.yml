@@ -1,5 +1,9 @@
 ---
 
+- name: merge automysqlbackup configuration between defaults and custom
+  ansible.builtin.set_fact:
+    automysqlbackup_cron: "{{ automysqlbackup_defaults_cron | combine(automysqlbackup_cron, recursive=True) }}"
+
 - name: remove background cron job
   when:
     - not automysqlbackup_cron.enabled | default('false') | bool
@@ -96,6 +100,9 @@
             mode: "0644"
           notify:
             - daemon reload
+
+        - name: flush handlers
+          ansible.builtin.meta: flush_handlers
 
         - name: enable automysqlbackup background timer
           ansible.builtin.service:

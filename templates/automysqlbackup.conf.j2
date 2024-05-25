@@ -1,126 +1,163 @@
-# version=3.0_rc2
+#jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
+# version=3.1
 
-# CONFIG_mysql_dump_encrypted_login='no'
 
-{% if automysqlbackup_dump.login_path is defined and automysqlbackup_dump.login_path != '' -%}
-CONFIG_mysql_dump_login_path='{{ automysqlbackup_dump.login_path }}'
-{% else %}
-# CONFIG_mysql_dump_login_path='automysqldump'
+{% if automysqlbackup_connection is defined %}
+# connection settings
+  {% if automysqlbackup_connection.encrypted_login is defined and
+      automysqlbackup_connection.encrypted_login | string | length > 0 %}
+CONFIG_mysql_dump_encrypted_login='{{ automysqlbackup_connection.encrypted_login | bool | ternary('yes', 'no') }}'
+  {% endif %}
+  {% if automysqlbackup_connection.login_path is defined and
+        automysqlbackup_connection.login_path | string | length > 0 %}
+CONFIG_mysql_dump_login_path='{{ automysqlbackup_connection.login_path }}'
+  {% endif %}
+  {% if automysqlbackup_connection.login_cnf_file is defined %}
+CONFIG_mysql_dump_login_cnf_file='{{ automysqlbackup_connection.login_cnf_file }}'
+  {% endif %}
+  {% if automysqlbackup_connection.username is defined and
+        automysqlbackup_connection.username | string | length > 0 %}
+CONFIG_mysql_dump_username='{{ automysqlbackup_connection.username }}'
+  {% endif %}
+  {% if automysqlbackup_connection.password is defined and
+        automysqlbackup_connection.password | string | length > 0 %}
+CONFIG_mysql_dump_password='{{ automysqlbackup_connection.password }}'
+  {% endif %}
+  {% if automysqlbackup_connection.host is defined and
+        automysqlbackup_connection.host | string | length > 0 %}
+CONFIG_mysql_dump_host='{{ automysqlbackup_connection.host }}'
+  {% endif %}
+  {% if automysqlbackup_connection.port is defined and
+        automysqlbackup_connection.port | string | length > 0 %}
+CONFIG_mysql_dump_port={{ automysqlbackup_connection.port }}
+  {% endif %}
+  {% if automysqlbackup_connection.socket is defined and
+        automysqlbackup_connection.socket | string | length > 0 %}
+CONFIG_mysql_dump_socket='{{ automysqlbackup_connection.socket }}'
+  {% endif %}
+  {% if automysqlbackup_connection.commpress_communication is defined and
+        automysqlbackup_connection.commpress_communication | string | length > 0 %}
+CONFIG_mysql_dump_commcomp='{{ automysqlbackup_connection.commpress_communication | bool | ternary('yes', 'no') }}'
+  {% endif %}
+# CONFIG_mysql_dump_usessl='no'
+# CONFIG_mysql_dump_max_allowed_packet=''
+  {% if automysqlbackup_connection.single_transaction is defined and
+        automysqlbackup_connection.single_transaction | string | length > 0 %}
+CONFIG_mysql_dump_single_transaction='{{ automysqlbackup_connection.single_transaction | bool | ternary('yes', 'no') }}'
+  {% endif %}
 {% endif %}
 
-{% if automysqlbackup_dump.login_path_file is defined -%}
-CONFIG_mysql_dump_login_path_file='{{ automysqlbackup_dump.login_path_file }}'
-{% else %}
-# CONFIG_mysql_dump_login_path_file=''
+{% if automysqlbackup_dump.host_friendly is defined and
+      automysqlbackup_dump.host_friendly | string | length > 0 %}
+CONFIG_mysql_dump_host_friendly='{{ automysqlbackup_dump.host_friendly | bool | ternary('yes', 'no') }}'
 {% endif %}
-
-{% if automysqlbackup_dump.username is defined and automysqlbackup_dump.username != '' -%}
-CONFIG_mysql_dump_username='{{ automysqlbackup_dump.username }}'
-{% else %}
-# CONFIG_mysql_dump_username='root'
-{% endif %}
-
-{% if automysqlbackup_dump.password is defined and automysqlbackup_dump.password != ''-%}
-CONFIG_mysql_dump_password='{{ automysqlbackup_dump.password }}'
-{% else %}
-# CONFIG_mysql_dump_password=''
-{% endif %}
-
-{% if automysqlbackup_dump.host is defined and automysqlbackup_dump.host != '' -%}
-CONFIG_mysql_dump_host='{{ automysqlbackup_dump.host }}'
-{% else %}
-# CONFIG_mysql_dump_host='127.0.0.1'
-{% endif %}
-
-# CONFIG_mysql_dump_host_friendly=''
-
 CONFIG_backup_dir='{{ automysqlbackup_backup_directory }}'
 
-{% if automysqlbackup_multicore %}
-CONFIG_multicore='{{ automysqlbackup_multicore | bool | ternary('yes', 'no') }}'
-CONFIG_multicore_threads={{ automysqlbackup_multicore_threads | default('2') }}
+{% if automysqlbackup_multicore.enabled is defined and
+      automysqlbackup_multicore.enabled | string | length > 0 %}
+CONFIG_multicore='{{ automysqlbackup_multicore.enabled | bool | ternary('yes', 'no') }}'
+  {% if automysqlbackup_multicore.enabled %}
+CONFIG_multicore_threads={{ automysqlbackup_multicore.threads | default('2') }}
+  {% endif %}
 {% endif %}
 
-{% if automysqlbackup_include_databases is defined and automysqlbackup_include_databases | count != 0 %}
-CONFIG_db_names=( "{{ automysqlbackup_include_databases | join('" "') }}" )
-{% else %}
-#CONFIG_db_names=()
+{% if automysqlbackup_include.databases is defined and
+      automysqlbackup_include.databases | count != 0 %}
+CONFIG_db_names=( "{{ automysqlbackup_include.databases | join('" "') }}" )
+{% endif %}
+{% if automysqlbackup_exclude.databases is defined and
+      automysqlbackup_exclude.databases | count != 0 %}
+CONFIG_db_exclude=( "{{ automysqlbackup_exclude.databases | default([]) | join('" "') }}" )
+{% endif %}
+{% if automysqlbackup_exclude.tables is defined and
+      automysqlbackup_exclude.tables | count != 0 %}
+CONFIG_table_exclude=( "{{ automysqlbackup_exclude.tables | default([]) | join('" "') }}" )
 {% endif %}
 
-#CONFIG_db_month_names=()
-CONFIG_db_exclude=( "{{ automysqlbackup_exclude_databases | default([]) | join('" "') }}" )
-#CONFIG_table_exclude=()
+{% if automysqlbackup_dump.full_schema is defined and
+      automysqlbackup_dump.full_schema | string | length > 0 %}
+CONFIG_mysql_dump_full_schema='{{ automysqlbackup_dump.full_schema | bool | ternary('yes', 'no') }}'
+{% endif %}
+{% if automysqlbackup_dump.dbstatus is defined and
+      automysqlbackup_dump.dbstatus | string | length > 0 %}
+CONFIG_mysql_dump_dbstatus='{{ automysqlbackup_dump.dbstatus | bool | ternary('yes', 'no') }}'
+{% endif %}
+{% if automysqlbackup_dump.create_database is defined and
+      automysqlbackup_dump.create_database | string | length > 0 %}
+CONFIG_mysql_dump_create_database='{{ automysqlbackup_dump.create_database | bool | ternary('yes', 'no') }}'
+{% endif %}
+{% if automysqlbackup_dump.use_separate_dirs is defined and
+      automysqlbackup_dump.use_separate_dirs | string | length > 0 %}
+CONFIG_mysql_dump_use_separate_dirs='{{ automysqlbackup_dump.use_separate_dirs | bool | ternary('yes', 'no') }}'
+{% endif %}
+{% if automysqlbackup_dump.compression is defined and
+      automysqlbackup_dump.compression | string | length > 0 and
+      automysqlbackup_dump.compression in ['gzip', 'bzip2' ] %}
+CONFIG_mysql_dump_compression='{{ automysqlbackup_dump.compression }}'
+{% endif %}
+{% if automysqlbackup_dump.latest is defined and
+      automysqlbackup_dump.latest | string | length > 0 %}
+CONFIG_mysql_dump_latest='{{ automysqlbackup_dump.latest | bool | ternary('yes', 'no') }}'
+{% endif %}
+{% if automysqlbackup_dump.latest_clean_filenames is defined and
+      automysqlbackup_dump.latest_clean_filenames | string | length > 0 %}
+CONFIG_mysql_dump_latest_clean_filenames='{{ automysqlbackup_dump.latest_clean_filenames | bool | ternary('yes', 'no') }}'
+{% endif %}
 
-#CONFIG_do_monthly="01"
-#CONFIG_do_weekly="5"
+{% if automysqlbackup_rotation is defined and
+      automysqlbackup_rotation | count > 0 %}
+# Rotation Settings
 CONFIG_rotation_daily={{ automysqlbackup_rotation.daily | default('6') }}
 CONFIG_rotation_weekly={{ automysqlbackup_rotation.weekly | default('12') }}
 CONFIG_rotation_monthly={{ automysqlbackup_rotation.monthly | default('3') }}
-
-{% if automysqlbackup_dump.port is defined %}
-CONFIG_mysql_dump_port={{ automysqlbackup_dump.port | default('3306') }}
+  {% if automysqlbackup_rotation.do_monthly is defined and
+        automysqlbackup_rotation.do_monthly | string | length > 0 %}
+CONFIG_do_monthly="{{ automysqlbackup_rotation.do_monthly }}"
+  {% endif %}
+  {% if automysqlbackup_rotation.do_weekly is defined and
+        automysqlbackup_rotation.do_weekly | string | length > 0 %}
+CONFIG_do_weekly="{{ automysqlbackup_rotation.do_weekly }}"
+  {% endif %}
 {% endif %}
 
-#CONFIG_mysql_dump_commcomp='no'
-#CONFIG_mysql_dump_usessl='no'
-
-{% if automysqlbackup_dump.socket is defined and automysqlbackup_dump.socket != '' -%}
-CONFIG_mysql_dump_socket='{{ automysqlbackup_dump.socket }}'
-{% else %}
-# CONFIG_mysql_dump_socket=''
+{% if automysqlbackup_notification.enabled is defined and
+      automysqlbackup_notification.enabled | string | length > 0 and
+      automysqlbackup_notification.enabled %}
+# Notification setup
+  {% if automysqlbackup_notification.mail_content is defined and
+        automysqlbackup_notification.mail_content | string | length > 0 and
+        automysqlbackup_notification.mail_content in ['log', 'files', 'stdout', 'quiet' ] %}
+CONFIG_mailcontent='{{ automysqlbackup_notification.mail_content }}'
+  {% endif %}
+  {% if automysqlbackup_notification.mail_maxattsize is defined and
+        automysqlbackup_notification.mail_maxattsize | string | length > 0 %}
+CONFIG_mail_maxattsize={{ automysqlbackup_notification.mail_maxattsize }}
+  {% endif %}
+  {% if automysqlbackup_notification.mail_splitandtar is defined and
+        automysqlbackup_notification.mail_splitandtar | string | length > 0 %}
+CONFIG_mail_splitandtar='{{ automysqlbackup_notification.mail_splitandtar | bool | ternary('yes', 'no') }}'
+  {% endif %}
+  {% if automysqlbackup_notification.mail_use_uuencoded_attachments is defined and
+        automysqlbackup_notification.mail_use_uuencoded_attachments | string | length > 0 %}
+CONFIG_mail_use_uuencoded_attachments='{{ automysqlbackup_notification.mail_use_uuencoded_attachments | bool | ternary('yes', 'no') }}'
+  {% endif %}
+  {% if automysqlbackup_notification.mail_address is defined and
+        automysqlbackup_notification.mail_address | string | length > 0 %}
+CONFIG_mail_address='{{ automysqlbackup_notification.mail_address }}'
+  {% endif %}
 {% endif %}
 
-#CONFIG_mysql_dump_max_allowed_packet=''
-
-{% if automysqlbackup_dump.single_transaction is defined -%}
-CONFIG_mysql_dump_single_transaction='{{ automysqlbackup_dump.single_transaction | bool | ternary('yes', 'no') }}'
-{% else %}
-# CONFIG_mysql_dump_single_transaction='no'
-{% endif %}
-
-#CONFIG_mysql_dump_master_data=
-
-{% if automysqlbackup_dump.full_schema is defined -%}
-CONFIG_mysql_dump_full_schema='{{ automysqlbackup_dump.full_schema | bool | ternary('yes', 'no') }}'
-{% else %}
-# CONFIG_mysql_dump_full_schema='yes'
-{% endif %}
-
-{% if automysqlbackup_dump.dbstatus is defined -%}
-CONFIG_mysql_dump_dbstatus='{{ automysqlbackup_dump.dbstatus | bool | ternary('yes', 'no') }}'
-{% else %}
-# CONFIG_mysql_dump_dbstatus='yes'
-{% endif %}
-
-{% if automysqlbackup_dump.create_database is defined -%}
-CONFIG_mysql_dump_create_database='{{ automysqlbackup_dump.create_database | bool | ternary('yes', 'no') }}'
-{% else %}
-# CONFIG_mysql_dump_create_database='no'
-{% endif %}
-
-{% if automysqlbackup_dump.use_separate_dirs is defined -%}
-CONFIG_mysql_dump_create_database='{{ automysqlbackup_dump.use_separate_dirs | bool | ternary('yes', 'no') }}'
-{% else %}
-# CONFIG_mysql_dump_use_separate_dirs='no'
-{% endif %}
-
-#CONFIG_mysql_dump_compression='gzip'
-CONFIG_mysql_dump_latest='yes'
-#CONFIG_mysql_dump_latest_clean_filenames='no'
-
-#CONFIG_mysql_dump_differential='no'
-
-#CONFIG_mailcontent='stdout'
-#CONFIG_mail_maxattsize=4000
-#CONFIG_mail_splitandtar='yes'
-#CONFIG_mail_use_uuencoded_attachments='no'
-#CONFIG_mail_address='root'
-
+{% if automysqlbackup_encryption.enabled is defined and
+      automysqlbackup_encryption.enabled | string | length > 0 and
+      automysqlbackup_encryption.enabled %}
+# Encryption
 #CONFIG_encrypt='no'
 #CONFIG_encrypt_password='password0123'
+{% endif %}
 
-{% if automysqlbackup_backup_local_files is defined and automysqlbackup_backup_local_files | count != 0 %}
+{% if automysqlbackup_backup_local_files is defined and
+      automysqlbackup_backup_local_files | count != 0 %}
 #CONFIG_backup_local_files=( "{{ automysqlbackup_backup_local_files | join('" "') }}" )
 {% endif %}
 
@@ -140,4 +177,3 @@ CONFIG_postbackup="{{ automysqlbackup_post_script.file }}"
 #umask 0077
 
 #CONFIG_dryrun=1
-

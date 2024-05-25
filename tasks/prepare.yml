@@ -3,34 +3,26 @@
 - name: update facts to get latest information
   ansible.builtin.setup:
 
-- name: detect the installed binary
-  ansible.builtin.stat:
-    path: /usr/local/bin/automysqlbackup
-    # get_checksum: false
-  register: stat_automysqlbackup_binary
-  ignore_errors: true
-
-- name: define local fact for automysqlbackup
-  ansible.builtin.set_fact:
-    automysqlbackup_checksum: "{{ ansible_local.automysqlbackup.checksum }}"
-  when:
-    - ansible_local.automysqlbackup is defined
-    - ansible_local.automysqlbackup.checksum | default('') | length != 0
-
-- name: define automysqlbackup download
-  ansible.builtin.set_fact:
-    automysqlbackup_download: true
-  when:
-    - automysqlbackup_checksum | default('') | string | length == 0 or
-      automysqlbackup_checksum != stat_automysqlbackup_binary.stat.checksum
-
-- name: create download directory
-  become: false
-  delegate_to: localhost
-  ansible.builtin.file:
-    path: "{{ automysqlbackup_local_tmp_directory }}"
-    state: directory
-    mode: 0750
+# - name: detect the installed binary
+#   ansible.builtin.stat:
+#     path: /usr/local/bin/automysqlbackup
+#     # get_checksum: false
+#   register: stat_automysqlbackup_binary
+#   ignore_errors: true
+#
+# - name: define local fact for automysqlbackup
+#   ansible.builtin.set_fact:
+#     automysqlbackup_checksum: "{{ ansible_local.automysqlbackup.checksum }}"
+#   when:
+#     - ansible_local.automysqlbackup is defined
+#     - ansible_local.automysqlbackup.checksum | default('') | length != 0
+#
+# - name: define automysqlbackup download
+#   ansible.builtin.set_fact:
+#     automysqlbackup_download: true
+#   when:
+#     - automysqlbackup_checksum | default('') | string | length == 0 or
+#       automysqlbackup_checksum != stat_automysqlbackup_binary.stat.checksum
 
 - name: create ansible local facts directory
   ansible.builtin.file:
