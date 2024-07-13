@@ -37,6 +37,7 @@ jobs:
       - name: check out the codebase.
         uses: actions/checkout@v4
         with:
+          path: 'ansible-automysqlbackup'
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
@@ -82,6 +83,7 @@ jobs:
       - name: check out the codebase.
         uses: actions/checkout@v4
         with:
+          path: 'ansible-automysqlbackup'
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
@@ -128,6 +130,7 @@ jobs:
       - name: check out the codebase.
         uses: actions/checkout@v4
         with:
+          path: 'ansible-automysqlbackup'
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
