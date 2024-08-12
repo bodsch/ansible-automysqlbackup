@@ -15,6 +15,21 @@ Installs and confige automysqlbackup script.
 [releases]: https://github.com/bodsch/ansible-automysqlbackup/releases
 [galaxy]: https://galaxy.ansible.com/ui/standalone/roles/bodsch/automysqlbackup/
 
+
+## Requirements & Dependencies
+
+Ansible Collections
+
+- [bodsch.core](https://github.com/bodsch/ansible-collection-core)
+
+```bash
+ansible-galaxy collection install bodsch.core
+```
+or
+```bash
+ansible-galaxy collection install --requirements-file collections.yml
+```
+
 ## Operating systems
 
 Tested on
